@@ -1,0 +1,1 @@
+import{expect,test}from"@playwright/test";test("RALLYGRID home screen renders",async({page})=>{await page.goto("/");await expect(page.getByRole("heading",{name:"RALLYGRID"})).toBeVisible();await expect(page.getByLabel("RALLYGRID game arena")).toBeVisible()})

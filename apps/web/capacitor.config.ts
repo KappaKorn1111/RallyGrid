@@ -1,0 +1,1 @@
+import type { CapacitorConfig } from "@capacitor/cli"; const config:CapacitorConfig={appId:"com.rallygrid.game",appName:"RALLYGRID",webDir:"dist"}; export default config;

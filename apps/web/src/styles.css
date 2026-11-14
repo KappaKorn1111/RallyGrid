@@ -1,0 +1,1 @@
+@import "tailwindcss";:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:#080d18;color:#f4f7fb;font-synthesis:none;text-rendering:optimizeLegibility}*{box-sizing:border-box}html,body,#root{min-height:100%;margin:0}body{min-width:320px;min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#17304c 0%,#080d18 55%)}button{font:inherit}
