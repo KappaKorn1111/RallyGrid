@@ -77,12 +77,30 @@ export function validateMatchState(state: MatchState): void {
     if (rally.completedAt !== null && (!rally.result || !PLAYER_IDS.includes(rally.nextServer ?? ""))) {
       throw new TypeError("Completed rallies require a result and next server.");
     }
-    if (rally.result?.kind === "win" && rally.nextServer !== rally.result.loser) {
-      throw new TypeError("Next server must be the losing player.");
+    if (rally.result?.kind === "win") {
+      if (!PLAYER_IDS.includes(rally.result.winner) || !PLAYER_IDS.includes(rally.result.loser) ||
+          rally.result.winner === rally.result.loser || rally.result.cell !== rally.target ||
+          rally.nextServer !== rally.result.loser) {
+        throw new TypeError("Invalid rally winner, loser, cell, or next server.");
+      }
+    } else if (rally.result !== null && rally.result?.kind === "draw") {
+      if (rally.nextServer !== rally.receiver) throw new TypeError("A drawn rally passes serve to the receiver.");
+    } else if (rally.result !== null) {
+      throw new TypeError("Unknown rally result kind.");
     }
-    if (rally.result?.kind === "draw" && rally.nextServer !== rally.receiver) {
-      throw new TypeError("A drawn rally passes serve to the receiver.");
+    if (rally.id !== (rally.completedAt === null ? state.rallyCount + 1 : state.rallyCount)) {
+      throw new TypeError("Rally sequence does not match the match counter.");
     }
+  }
+  const requiresRally = state.status === "dice" || state.status === "countdown" || state.status === "rally" || state.status === "resolving" || state.status === "completed";
+  if (requiresRally !== (state.activeRally !== null)) throw new TypeError("Active rally does not match the match phase.");
+  if ((state.status === "ready" || state.status === "dice" || state.status === "countdown" || state.status === "rally") &&
+      state.activeRally?.completedAt !== null && state.activeRally !== null) {
+    throw new TypeError("A live match phase cannot contain a completed rally.");
+  }
+  if ((state.status === "resolving" || state.status === "completed") &&
+      state.activeRally?.completedAt === null) {
+    throw new TypeError("A resolving or completed phase requires a completed rally.");
   }
   const boardWinner = getWinningPlayer(state.board);
   if (boardWinner !== null && state.status !== "completed") throw new TypeError("A winning board must be completed.");
@@ -97,6 +115,8 @@ export function validateMatchState(state: MatchState): void {
     if (boardWinner !== null || !isBoardFull(state.board) || state.winner !== null || !state.draw) {
       throw new TypeError("Draw outcome requires a full board without a winning line.");
     }
+  } else if (state.outcome !== null) {
+    throw new TypeError("Unknown match outcome kind.");
   } else if (state.winner !== null || state.draw) {
     throw new TypeError("Winner/draw flags require a matching final outcome.");
   }
