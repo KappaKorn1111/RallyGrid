@@ -1,6 +1,7 @@
 import { assertBoard, getWinningPlayer, isBoardFull } from "./board.js";
 import { assertEventSequence } from "./events.js";
-import type { GameEvent, MatchSnapshot, MatchState, PlayerId } from "./types.js";
+import { createMatchFromState, type MatchEngine } from "./match.js";
+import type { GameEvent, MatchSnapshot, MatchState, PlayerId, RandomSource } from "./types.js";
 const PLAYER_IDS: readonly string[] = ["player-1", "player-2"];
 const STATUSES: readonly string[] = ["ready", "dice", "countdown", "rally", "resolving", "completed"];
 
@@ -26,6 +27,11 @@ export function restoreMatch(serialized: string): MatchSnapshot {
     throw new TypeError("Invalid event sequence.");
   }
   return { state: snapshot.state, eventSequence: snapshot.eventSequence };
+}
+
+export function restoreMatchEngine(serialized: string, random: RandomSource): MatchEngine {
+  const snapshot = restoreMatch(serialized);
+  return createMatchFromState(snapshot.state, random);
 }
 
 export function validateMatchState(state: MatchState): void {
