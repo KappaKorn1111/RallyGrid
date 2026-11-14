@@ -69,8 +69,8 @@ export class RallyGridRoom extends Room {
     if (!player || this.game.state.status !== "rally" || !payload || typeof payload !== "object") return;
     const now = Date.now();
     const previous = this.lastInputAt.get(client.sessionId) ?? 0;
-    if (now - previous < INPUT_INTERVAL_MS) return;
     if (typeof payload.axis !== "number" || !Number.isFinite(payload.axis)) return this.reject(client, "Paddle axis must be a finite number.");
+    if (payload.axis !== 0 && now - previous < INPUT_INTERVAL_MS) return;
     this.lastInputAt.set(client.sessionId, now);
     this.physics.setPaddleAxis(player, payload.axis);
   }
