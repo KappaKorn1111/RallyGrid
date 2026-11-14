@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Room, type Client } from "colyseus";
-import { createMatch, otherPlayer, type MatchEngine, type PlayerId } from "@rallygrid/game-core";
+import { createMatch, otherPlayer, type MatchEngine, type MatchState, type PlayerId } from "@rallygrid/game-core";
 import { secureGameRandom } from "../game/secure-random.js";
 import { RallyPhysics } from "../game/rally-physics.js";
 
@@ -101,7 +101,8 @@ export class RallyGridRoom extends Room {
         state: this.game.state,
         events: this.game.events
       });
-      if (this.game.state.status === "completed") {
+      const resolvedState = this.game.state as MatchState;
+      if (resolvedState.status === "completed") {
         this.broadcast("match:ended", { outcome: this.game.state.outcome, state: this.game.state });
       } else {
         this.physics.reset(this.game.state.server);
