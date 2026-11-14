@@ -1,3 +1,10 @@
+import { createEmptyBoard, claimCell, getWinningPlayer, isBoardFull } from "./board.js";
+import { rollForAvailableTarget } from "./dice.js";
+import { createEvent } from "./events.js";
+import { createPlayers, incrementRallyWin, otherPlayer } from "./players.js";
+import { completeRally, createRally } from "./rally.js";
+import { nextServerAfterRally } from "./turn.js";
+import type { GameEvent, MatchOutcome, MatchState, PlayerId, RandomSource, RallyResult } from "./types.js";
 export function createMatch(options:CreateMatchOptions,random:RandomSource):MatchEngine {
  if(!options.matchId.trim()) throw new TypeError("matchId is required.");
  const firstServer=options.firstServer??"player-1";
