@@ -65,6 +65,18 @@ export function validateMatchState(state: MatchState): void {
     if (rally.completedAt !== null && (!Number.isFinite(rally.completedAt) || rally.completedAt < rally.startedAt)) {
       throw new TypeError("Invalid rally completion timestamp.");
     }
+    if (rally.completedAt === null && (rally.result !== null || rally.nextServer !== null)) {
+      throw new TypeError("Incomplete rallies cannot contain a result or next server.");
+    }
+    if (rally.completedAt !== null && (!rally.result || !PLAYER_IDS.includes(rally.nextServer ?? ""))) {
+      throw new TypeError("Completed rallies require a result and next server.");
+    }
+    if (rally.result?.kind === "win" && rally.nextServer !== rally.result.loser) {
+      throw new TypeError("Next server must be the losing player.");
+    }
+    if (rally.result?.kind === "draw" && rally.nextServer !== rally.receiver) {
+      throw new TypeError("A drawn rally passes serve to the receiver.");
+    }
   }
   const boardWinner = getWinningPlayer(state.board);
   if (boardWinner !== null && state.status !== "completed") throw new TypeError("A winning board must be completed.");
