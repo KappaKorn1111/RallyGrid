@@ -21,8 +21,7 @@ export function createMatch(options:CreateMatchOptions,random:RandomSource):Matc
  const transition=(to:MatchState["status"])=>{assertTransition(state.status,to);state={...state,status:to,revision:state.revision+1};};
  const api:MatchEngine={
   get state(){return state;},get events(){return events;},
-  rollDice(){ if(state.status!=="ready"&&state.status!=="resolving") throw new Error("Dice can only be rolled before a rally or after a rally resolves."); if(state.status==="resolving") transition("dice"); else transition("dice");
-   const roll=rollForAvailableTarget(state.board,random); const rallyId=state.rallyCount+1;
+  rollDice(){ if(state.status!=="ready"&&state.status!=="resolving") throw new Error("Dice can only be rolled before a rally or after a rally resolves."); const roll=rollForAvailableTarget(state.board,random); transition("dice"); const rallyId=state.rallyCount+1;
    emit({type:"dice.rolled",rallyId,roll,revision:state.revision+1});
    emit({type:"target.selected",rallyId,target:roll.target,revision:state.revision+2});
    state={...state,revision:state.revision+2,activeRally:{id:rallyId,server:state.server,receiver:otherPlayer(state.server),target:roll.target,startedAt:0,completedAt:null,result:null}};
