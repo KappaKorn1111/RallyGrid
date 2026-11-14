@@ -5,6 +5,21 @@ import { createPlayers, incrementRallyWin, otherPlayer } from "./players.js";
 import { completeRally, createRally } from "./rally.js";
 import { nextServerAfterRally } from "./turn.js";
 import type { GameEvent, MatchOutcome, MatchState, PlayerId, RandomSource, RallyResult } from "./types.js";
+const validStatuses = ["ready", "dice", "countdown", "rally", "resolving", "completed"] as const;
+export function isValidTransition(from: MatchState["status"], to: MatchState["status"]): boolean {
+  const transitions: Record<MatchState["status"], readonly MatchState["status"][]> = {
+    ready: ["dice"],
+    dice: ["countdown"],
+    countdown: ["rally"],
+    rally: ["resolving"],
+    resolving: ["dice", "completed"],
+    completed: ["ready"]
+  };
+  return validStatuses.includes(from) && validStatuses.includes(to) && transitions[from].includes(to);
+}
+export function assertTransition(from: MatchState["status"], to: MatchState["status"]): void {
+  if (!isValidTransition(from, to)) throw new Error(`Invalid match transition: ${from} -> ${to}.`);
+}
 export function createMatch(options:CreateMatchOptions,random:RandomSource):MatchEngine {
  if(!options.matchId.trim()) throw new TypeError("matchId is required.");
  const firstServer=options.firstServer??"player-1";
