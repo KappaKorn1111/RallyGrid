@@ -13,7 +13,7 @@ export function claimCell(board: Board, index: number, player: PlayerId): Board 
  if (!Number.isInteger(index) || index < 0 || index >= BOARD_SIZE) throw new RangeError("Cell index must be an integer from 0 through 8.");
  if (player !== "player-1" && player !== "player-2") throw new TypeError("Invalid player ownership.");
  if (board[index] !== null) throw new Error("Cell is already claimed.");
- const next = [...board]; next[index] = player; return next;
+ const next: CellOwner[] = Array.from(board); next[index] = player; return next;
 }
 export function getWinningPlayer(board: Board): PlayerId | null {
  assertBoard(board);
