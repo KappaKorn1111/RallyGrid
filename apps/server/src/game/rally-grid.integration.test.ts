@@ -17,6 +17,7 @@ describe("RALLYGRID authoritative match integration", () => {
     match.startCountdown();
     match.startRally(1);
     physics.reset(match.state.server);
+    physics.setPaddleAxis("player-2", 1);
 
     let losingPlayer: ReturnType<typeof otherPlayer> | null = null;
     for (let frame = 0; frame < 3000 && losingPlayer === null; frame++) {
