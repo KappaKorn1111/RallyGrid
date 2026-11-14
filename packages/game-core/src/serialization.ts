@@ -8,7 +8,7 @@ export function restoreMatch(serialized:string):MatchSnapshot {
  if(!parsed||typeof parsed!=="object"||!("state" in parsed)||!("eventSequence" in parsed))throw new TypeError("Invalid match snapshot envelope.");
  const snapshot=parsed as MatchSnapshot;validateMatchState(snapshot.state);
  if(!Number.isInteger(snapshot.eventSequence)||snapshot.eventSequence<0)throw new TypeError("Invalid event sequence.");
- return structuredClone(snapshot);
+ return { state: snapshot.state, eventSequence: snapshot.eventSequence };
 }
 export function validateMatchState(state:MatchState):void {
  if(!state||state.schemaVersion!==1||typeof state.matchId!=="string"||!state.matchId)throw new TypeError("Invalid match identity or schema version.");
