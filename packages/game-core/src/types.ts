@@ -6,7 +6,7 @@ export type MatchOutcome = { kind: "win"; winner: PlayerId; loser: PlayerId } | 
 export type RallyResult = { kind: "win"; winner: PlayerId; loser: PlayerId; cell: number } | { kind: "draw" };
 export interface Player { readonly id: PlayerId; readonly displayName: string; readonly ralliesWon: number; }
 export interface DiceRoll { readonly die1: number; readonly die2: number; readonly row: number; readonly column: number; readonly target: number; readonly rerolls: number; }
-export interface Rally { readonly id: number; readonly server: PlayerId; readonly receiver: PlayerId; readonly target: number; readonly startedAt: number; readonly completedAt: number | null; readonly result: RallyResult | null; }
+export interface Rally { readonly id: number; readonly server: PlayerId; readonly receiver: PlayerId; readonly target: number; readonly startedAt: number; readonly completedAt: number | null; readonly result: RallyResult | null; readonly nextServer: PlayerId | null; }
 export interface MatchState { readonly schemaVersion: 1; readonly matchId: string; readonly status: MatchStatus; readonly players: readonly [Player, Player]; readonly board: Board; readonly server: PlayerId; readonly activeRally: Rally | null; readonly rallyCount: number; readonly winner: PlayerId | null; readonly draw: boolean; readonly outcome: MatchOutcome | null; readonly revision: number; }
 export type GameEvent =
  | { type: "match.started"; matchId: string; server: PlayerId; revision: number }
