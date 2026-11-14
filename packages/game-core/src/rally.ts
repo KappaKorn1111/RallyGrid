@@ -10,5 +10,6 @@ export function completeRally(rally:Rally,result:RallyResult,completedAt:number)
  if(rally.result!==null||rally.completedAt!==null)throw new Error("Rally has already been completed.");
  if(!Number.isFinite(completedAt)||completedAt<rally.startedAt)throw new TypeError("Invalid rally completion timestamp.");
  if(result.kind==="win"&&(result.winner===result.loser||result.cell!==rally.target))throw new TypeError("Invalid rally result.");
- const nextServer = result.kind === "win" ? result.loser : rally.receiver;\n return {...rally,completedAt,result,nextServer};
+ const nextServer = result.kind === "win" ? result.loser : rally.receiver;
+ return {...rally,completedAt,result,nextServer};
 }
