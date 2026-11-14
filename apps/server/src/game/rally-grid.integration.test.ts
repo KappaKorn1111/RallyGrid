@@ -26,6 +26,7 @@ describe("RALLYGRID authoritative match integration", () => {
     }
 
     expect(losingPlayer).toBe("player-2");
+    if (losingPlayer === null) throw new Error("Expected server physics to resolve a missed paddle.");
     match.resolveRally(otherPlayer(losingPlayer), 200);
     expect(match.state.board[target!]).toBe("player-1");
     expect(match.state.activeRally?.result).toEqual({
