@@ -3,7 +3,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import { Pool } from "pg";
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { Server as ColyseusServer } from "colyseus";
 import { env } from "./config/env.js";
 import { registerHealthRoutes } from "./infra/health.js";
