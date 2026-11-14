@@ -1,27 +1,18 @@
-import { createEmptyBoard, claimCell, getWinningPlayer, isBoardFull } from "./board.js";
-import { rollForAvailableTarget } from "./dice.js";
-import { createEvent } from "./events.js";
-import { createPlayers, incrementRallyWin, otherPlayer } from "./players.js";
-import { completeRally, createRally } from "./rally.js";
-import { nextServerAfterRally } from "./turn.js";
-import type { GameEvent, MatchOutcome, MatchState, PlayerId, RandomSource, RallyResult } from "./types.js";
-export interface CreateMatchOptions { matchId: string; playerNames?: readonly [string,string]; firstServer?: PlayerId; }
-export interface MatchEngine { readonly state: MatchState; readonly events: readonly GameEvent[]; rollDice(): void; startCountdown(): void; startRally(now?:number): void; recordPaddleCollision(player:PlayerId):void; resolveRally(winner:PlayerId, now?:number):void; resolveDraw(now?:number):void; startRematch(matchId:string,firstServer?:PlayerId):void; }
-const validStatuses = ["ready","dice","countdown","rally","resolving","completed"] as const;
-export function isValidTransition(from: MatchState["status"], to: MatchState["status"]): boolean {
- const map: Record<MatchState["status"], readonly MatchState["status"][]> = {ready:["dice"],dice:["countdown"],countdown:["rally"],rally:["resolving"],resolving:["dice","completed"],completed:["ready"]};
- return map[from].includes(to);
-}
-export function assertTransition(from: MatchState["status"],to:MatchState["status"]):void { if(!validStatuses.includes(from)||!validStatuses.includes(to)||!isValidTransition(from,to)) throw new Error(`Invalid match transition: ${from} -> ${to}.`); }
 export function createMatch(options:CreateMatchOptions,random:RandomSource):MatchEngine {
  if(!options.matchId.trim()) throw new TypeError("matchId is required.");
  const firstServer=options.firstServer??"player-1";
  if(firstServer!=="player-1"&&firstServer!=="player-2") throw new TypeError("Invalid initial server.");
- let state:MatchState={schemaVersion:1,matchId:options.matchId,status:"ready",players:createPlayers(options.playerNames??["Player 1","Player 2"]),board:createEmptyBoard(),server:firstServer,activeRally:null,rallyCount:0,winner:null,draw:false,outcome:null,revision:0};
+ const initialState:MatchState={schemaVersion:1,matchId:options.matchId,status:"ready",players:createPlayers(options.playerNames??["Player 1","Player 2"]),board:createEmptyBoard(),server:firstServer,activeRally:null,rallyCount:0,winner:null,draw:false,outcome:null,revision:0};
+ return buildMatchEngine(initialState,random,true);
+}
+export function createMatchFromState(state:MatchState,random:RandomSource):MatchEngine {
+ return buildMatchEngine(state,random,false);
+}
+function buildMatchEngine(initialState:MatchState,random:RandomSource,announceStart:boolean):MatchEngine {
+ let state:MatchState=initialState;
  let events:GameEvent[]=[];
  const emit=(event:GameEvent)=>{events=[...events,createEvent(event)];};
- state={...state,revision:1};
- emit({type:"match.started",matchId:state.matchId,server:state.server,revision:state.revision});
+ if(announceStart){state={...state,revision:state.revision+1};emit({type:"match.started",matchId:state.matchId,server:state.server,revision:state.revision});}
  const transition=(to:MatchState["status"])=>{assertTransition(state.status,to);state={...state,status:to,revision:state.revision+1};};
  const api:MatchEngine={
   get state(){return state;},get events(){return events;},
