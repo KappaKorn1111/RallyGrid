@@ -12,7 +12,7 @@ The engine receives a `RandomSource` dependency. The server must inject a crypto
 
 ## Serialization
 
-Use `serializeMatch` and `restoreMatch` for versioned JSON snapshots. Always validate restored snapshots at the server boundary; snapshots are state transfer, not an authentication mechanism.
+Use `serializeMatch` and `restoreMatch` for versioned JSON snapshots. Use `restoreMatchEngine(snapshot, randomSource)` to rehydrate a validated snapshot into a resumable engine instance. Always validate restored snapshots at the server boundary; snapshots are state transfer, not an authentication mechanism.
 
 ## Commands
 
