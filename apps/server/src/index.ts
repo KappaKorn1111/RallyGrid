@@ -7,6 +7,7 @@ import { Redis } from "ioredis";
 import { Server as ColyseusServer } from "colyseus";
 import { env } from "./config/env.js";
 import { registerHealthRoutes } from "./infra/health.js";
+import { RallyGridRoom } from "./rooms/rally-grid-room.js";
 
 const app = Fastify({ logger: { level: env.LOG_LEVEL, redact: ["req.headers.authorization", "req.headers.cookie"] } });
 const postgres = new Pool({ connectionString: env.DATABASE_URL, max: 10, connectionTimeoutMillis: 3000 });
@@ -31,6 +32,7 @@ try {
   await redis.connect();
   await postgres.query("SELECT 1");
   colyseus = new ColyseusServer({ server: app.server });
+  colyseus.define("rallygrid", RallyGridRoom);
   await app.listen({ host: env.HOST, port: env.PORT });
   app.log.info({ port: env.PORT }, "RALLYGRID API listening");
 } catch (error) {
