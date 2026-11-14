@@ -17,7 +17,7 @@ export function claimCell(board: Board, index: number, player: PlayerId): Board 
 }
 export function getWinningPlayer(board: Board): PlayerId | null {
  assertBoard(board);
- for (const [a,b,c] of WINNING_LINES) { const owner = board[a]; if (owner !== null && owner === board[b] && owner === board[c]) return owner; }
+ for (const [a,b,c] of WINNING_LINES) { const owner = board[a]; if (owner !== null && owner !== undefined && owner === board[b] && owner === board[c]) return owner; }
  return null;
 }
 export function isBoardFull(board: Board): boolean { assertBoard(board); return board.every(cell => cell !== null); }
