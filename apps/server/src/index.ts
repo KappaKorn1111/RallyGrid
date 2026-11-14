@@ -19,8 +19,8 @@ app.get("/", async () => ({ name: "RALLYGRID API", version: "0.1.0", health: "/h
 
 let colyseus: ColyseusServer | undefined;
 async function shutdown() {
-  await app.close().catch(() => undefined);
   if (colyseus) await colyseus.gracefullyShutdown(false).catch(() => undefined);
+  await app.close().catch(() => undefined);
   if (redis.status !== "end") await redis.quit().catch(() => undefined);
   await postgres.end().catch(() => undefined);
 }
