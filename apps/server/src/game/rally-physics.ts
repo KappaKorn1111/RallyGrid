@@ -17,6 +17,7 @@ export class RallyPhysics {
   private ball = { x: 0, y: 0, vx: 0, vy: 0 };
   private paddles = { player1Y: 0, player2Y: 0 };
   private axes: Record<PlayerId, number> = { "player-1": 0, "player-2": 0 };
+  private collision: PlayerId | null = null;
   constructor(private readonly random: RandomSource) {}
 
   reset(server: PlayerId): void {
@@ -25,6 +26,7 @@ export class RallyPhysics {
     this.ball = { x: 0, y: 0, vx: server === "player-1" ? BALL_SPEED : -BALL_SPEED, vy: vertical };
     this.paddles = { player1Y: 0, player2Y: 0 };
     this.axes = { "player-1": 0, "player-2": 0 };
+    this.collision = null;
   }
 
   setPaddleAxis(player: PlayerId, axis: number): void {
@@ -54,11 +56,18 @@ export class RallyPhysics {
     return null;
   }
 
+  consumeCollision(): PlayerId | null {
+    const collision = this.collision;
+    this.collision = null;
+    return collision;
+  }
+
   snapshot(): RallyPhysicsSnapshot {
     return { ball: { ...this.ball }, paddles: { ...this.paddles } };
   }
 
   private bounce(player: PlayerId): void {
+    this.collision = player;
     const paddleY = player === "player-1" ? this.paddles.player1Y : this.paddles.player2Y;
     const offset = clamp((this.ball.y - paddleY) / (PADDLE_HALF_HEIGHT + BALL_RADIUS), -1, 1);
     const direction = player === "player-1" ? 1 : -1;
