@@ -25,6 +25,7 @@ describe("authoritative rally physics", () => {
   it("detects a missed paddle as the losing player", () => {
     const physics = new RallyPhysics(zeroRandom);
     physics.reset("player-1");
+    physics.setPaddleAxis("player-2", 1);
     let loser: string | null = null;
     for (let i = 0; i < 3000 && loser === null; i++) loser = physics.tick(50);
     expect(loser).toBe("player-2");
