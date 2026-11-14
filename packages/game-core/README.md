@@ -22,3 +22,6 @@ Run `pnpm --filter @rallygrid/game-core typecheck`, `pnpm test -- packages/game-
 ## Authoritative multiplayer server
 
 The server registers the `rallygrid` Colyseus room. The room injects the Node `crypto.randomInt` adapter into the shared game engine, assigns player seats on join, accepts rate-limited paddle-axis inputs, advances a server-ticked rally simulation, and resolves a point only when the server simulation detects a missed paddle. Clients cannot submit dice results or choose a rally winner. Room messages: `match:roll`, `paddle:input`; server messages include `match:welcome`, `match:update`, `match:dice`, `match:rally-started`, `match:physics`, `match:rally-result`, and `match:ended`.
+
+
+CI now runs for the stacked Step 03 pull request targeting `step-01-foundation`.
