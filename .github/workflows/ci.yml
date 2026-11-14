@@ -2,9 +2,9 @@ name: RALLYGRID CI
 
 on:
   push:
-    branches: [main, step-01-foundation]
+    branches: [main, step-01-foundation, step-03-game-core]
   pull_request:
-    branches: [main]
+    branches: [main, step-01-foundation]
 
 jobs:
   verify:
