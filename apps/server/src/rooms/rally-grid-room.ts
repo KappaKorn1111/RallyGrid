@@ -44,6 +44,7 @@ export class RallyGridRoom extends Room {
     if (player) {
       this.playerBySession.delete(client.sessionId);
       this.lastInputAt.delete(client.sessionId);
+      this.physics.setPaddleAxis(player, 0);
       this.broadcast("match:player-left", { player, playersConnected: this.playerBySession.size });
     }
   }
