@@ -39,6 +39,8 @@ describe("live Colyseus RALLYGRID room", () => {
 
       const firstClientDice = nextMessage<{ state: MatchState; events: readonly GameEvent[] }>(room1, "match:dice");
       const secondClientDice = nextMessage<{ state: MatchState; events: readonly GameEvent[] }>(room2, "match:dice");
+      const firstRallyStart = nextMessage<{ state: MatchState }>(room1, "match:rally-started", 10000);
+      const secondRallyStart = nextMessage<{ state: MatchState }>(room2, "match:rally-started", 10000);
       room1.send("match:roll");
       const [first, second] = await Promise.all([firstClientDice, secondClientDice]);
 
@@ -47,10 +49,21 @@ describe("live Colyseus RALLYGRID room", () => {
       expect(first.state.activeRally?.target).toBeLessThanOrEqual(8);
       expect(second.state.activeRally?.target).toBe(first.state.activeRally?.target);
       expect(first.events.some((event) => event.type === "dice.rolled")).toBe(true);
+
+      const [firstStarted, secondStarted] = await Promise.all([firstRallyStart, secondRallyStart]);
+      expect(firstStarted.state.status).toBe("rally");
+      expect(secondStarted.state.activeRally?.target).toBe(first.state.activeRally?.target);
+      const firstResult = nextMessage<{ losingPlayer: string; winningPlayer: string; state: MatchState }>(room1, "match:rally-result", 10000);
+      const secondResult = nextMessage<{ losingPlayer: string; winningPlayer: string; state: MatchState }>(room2, "match:rally-result", 10000);
+      room2.send("paddle:input", { axis: 1 });
+      const [result1, result2] = await Promise.all([firstResult, secondResult]);
+      expect(result1.losingPlayer).toBe("player-2");
+      expect(result1.winningPlayer).toBe("player-1");
+      expect(result2.state.board[first.state.activeRally!.target]).toBe("player-1");
     } finally {
       await Promise.all([room1?.leave(), room2?.leave()]);
       await gameServer.gracefullyShutdown(false);
       await new Promise<void>((resolve) => httpServer.close(() => resolve()));
     }
-  }, 15000);
+  }, 20000);
 });
