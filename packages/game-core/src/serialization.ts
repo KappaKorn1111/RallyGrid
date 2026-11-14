@@ -59,7 +59,7 @@ export function validateMatchState(state: MatchState): void {
         rally.target < 0 || rally.target > 8 || !Number.isFinite(rally.startedAt)) {
       throw new TypeError("Invalid active rally.");
     }
-    if (state.board[rally.target] !== null && state.status !== "completed") {
+    if (state.board[rally.target] !== null && rally.completedAt === null) {
       throw new TypeError("Active rally target is already owned.");
     }
     if (rally.completedAt !== null && (!Number.isFinite(rally.completedAt) || rally.completedAt < rally.startedAt)) {
