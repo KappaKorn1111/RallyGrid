@@ -15,6 +15,5 @@ export function rollForAvailableTarget(board:Board,random:RandomSource):DiceRoll
  if(available.length===1){const target=available[0]!;const [die1,die2]=diceForTarget(target);return{die1,die2,row:Math.floor(target/3),column:target%3,target,rerolls:0};}
  const maxAttempts=256;
  for(let rerolls=0;rerolls<maxAttempts;rerolls++){const die1=drawInt(random,1,6),die2=drawInt(random,1,6);validateDiceRoll({die1,die2});const target=targetFromDice(die1,die2);if(board[target]===null)return{die1,die2,row:dieToIndex(die1),column:dieToIndex(die2),target,rerolls};}
- const target=available[drawInt(random,0,available.length-1)]!;const [die1,die2]=diceForTarget(target);
- return{die1,die2,row:Math.floor(target/3),column:target%3,target,rerolls:maxAttempts};
+ throw new Error("Random source failed to select an available target within the retry limit.");
 }
