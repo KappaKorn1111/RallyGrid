@@ -16,7 +16,7 @@ export function createMatch(options:CreateMatchOptions,random:RandomSource):Matc
  const firstServer=options.firstServer??"player-1";
  if(firstServer!=="player-1"&&firstServer!=="player-2") throw new TypeError("Invalid initial server.");
  let state:MatchState={schemaVersion:1,matchId:options.matchId,status:"ready",players:createPlayers(options.playerNames??["Player 1","Player 2"]),board:createEmptyBoard(),server:firstServer,activeRally:null,rallyCount:0,winner:null,draw:false,outcome:null,revision:0};
- let events:GameEvent[]=[];
+ let events:GameEvent[]=[];\n state={...state,revision:1};\n emit({type:"match.started",matchId:state.matchId,server:state.server,revision:state.revision});
  const emit=(event:GameEvent)=>{events=[...events,createEvent(event)];};
  const transition=(to:MatchState["status"])=>{assertTransition(state.status,to);state={...state,status:to,revision:state.revision+1};};
  const api:MatchEngine={
