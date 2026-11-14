@@ -1,0 +1,31 @@
+name: RALLYGRID Game Core
+
+on:
+  push:
+    branches: [step-03-game-core]
+  pull_request:
+    branches: [main, step-01-foundation]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  game-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install workspace dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: TypeScript strict checks
+        run: pnpm typecheck
+      - name: Lint
+        run: pnpm lint
+      - name: Unit and integration tests
+        run: pnpm test
+      - name: Production builds
+        run: pnpm build
