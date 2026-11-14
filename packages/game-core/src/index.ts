@@ -6,5 +6,6 @@ export * from "./rally.js";
 export * from "./turn.js";
 export * from "./state.js";
 export * from "./events.js";
-export * from "./match.js";
+export { createMatch, isValidTransition, assertTransition } from "./match.js";
+export type { CreateMatchOptions, MatchEngine } from "./match.js";
 export * from "./serialization.js";
