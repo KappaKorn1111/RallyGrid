@@ -25,3 +25,6 @@ The server registers the `rallygrid` Colyseus room. The room injects the Node `c
 
 
 CI now runs for the stacked Step 03 pull request targeting `step-01-foundation`.
+
+
+Verification workflow rerun requested after the first strict-TypeScript fixes.
