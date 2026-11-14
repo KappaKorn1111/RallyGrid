@@ -30,7 +30,8 @@ export class RallyGridRoom extends Room {
   }
 
   override onJoin(client: Client, options: JoinOptions = {}): void {
-    const assigned = this.playerBySession.size === 0 ? "player-1" : "player-2";
+    const occupied = new Set(this.playerBySession.values());
+    const assigned: PlayerId = !occupied.has("player-1") ? "player-1" : "player-2";
     this.playerBySession.set(client.sessionId, assigned);
     const displayName = typeof options.displayName === "string" ? options.displayName.trim().slice(0, 24) : "";
     client.send("match:welcome", { player: assigned, displayName: displayName || assigned, state: this.game.state });
@@ -88,6 +89,8 @@ export class RallyGridRoom extends Room {
     }
     if (this.game.state.status !== "rally") return;
     const losingPlayer = this.physics.tick(deltaTime);
+    const collisionPlayer = this.physics.consumeCollision();
+    if (collisionPlayer) this.game.recordPaddleCollision(collisionPlayer);
     if (losingPlayer) {
       this.game.resolveRally(otherPlayer(losingPlayer), Date.now());
       this.broadcast("match:rally-result", {
