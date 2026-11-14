@@ -5,6 +5,22 @@ import { createPlayers, incrementRallyWin, otherPlayer } from "./players.js";
 import { completeRally, createRally } from "./rally.js";
 import { nextServerAfterRally } from "./turn.js";
 import type { GameEvent, MatchOutcome, MatchState, PlayerId, RandomSource, RallyResult } from "./types.js";
+export interface CreateMatchOptions {
+  readonly matchId: string;
+  readonly playerNames?: readonly [string, string];
+  readonly firstServer?: PlayerId;
+}
+export interface MatchEngine {
+  readonly state: MatchState;
+  readonly events: readonly GameEvent[];
+  rollDice(): void;
+  startCountdown(): void;
+  startRally(now?: number): void;
+  recordPaddleCollision(player: PlayerId): void;
+  resolveRally(winner: PlayerId, now?: number): void;
+  resolveDraw(now?: number): void;
+  startRematch(matchId: string, firstServer?: PlayerId): void;
+}
 const validStatuses = ["ready", "dice", "countdown", "rally", "resolving", "completed"] as const;
 export function isValidTransition(from: MatchState["status"], to: MatchState["status"]): boolean {
   const transitions: Record<MatchState["status"], readonly MatchState["status"][]> = {
